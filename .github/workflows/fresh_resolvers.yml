@@ -1,0 +1,58 @@
+name: fresh resolvers
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+
+    - name: Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Install MassDNS
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y massdns
+
+    - name: Run fresh.py
+      run: python3 fresh.py -o resolvers.txt
+
+    - name: MassDNS resolvers
+      run: massdns -r resolvers.txt -t A -o S -w massdns_output.txt domain_list.txt
+
+    - name: Clean resolvers
+      run: bash clean.sh massdns_output.txt > resolvers_clean.txt
+
+    - name: Produce and move resolvers_clean.txt
+      run: |
+        mkdir -p output
+        mv resolvers_clean.txt output/resolvers_clean.txt
+
+    - name: Commit and push output file
+      run: |
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+        git add output/resolvers_clean.txt
+        git commit -m 'Add resolvers_clean.txt'
+        git push
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
