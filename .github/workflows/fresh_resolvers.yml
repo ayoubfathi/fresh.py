@@ -40,15 +40,9 @@ jobs:
 
     - name: Run fresh.py
       run: |
-        python3 fresh.py -o resolvers.txt
+        python3 fresh.py -o resolvers_clean.txt
       working-directory: /home/runner/work/fresh.py/fresh.py
       continue-on-error: true
-
-    - name: MassDNS resolvers
-      run: massdns -r resolvers.txt -t A -o S -w massdns_output.txt domain_list.txt
-
-    - name: Clean resolvers
-      run: bash clean.sh massdns_output.txt > resolvers_clean.txt
 
     - name: Produce and move resolvers_clean.txt
       run: |
