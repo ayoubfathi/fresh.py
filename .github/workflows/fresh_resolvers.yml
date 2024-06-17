@@ -42,6 +42,8 @@ jobs:
       run: |
         cd /home/runner/work/
         python3 fresh.py -o resolvers.txt
+      working-directory: /home/runner/work/fresh.py/fresh.py
+      continue-on-error: true
 
     - name: MassDNS resolvers
       run: massdns -r resolvers.txt -t A -o S -w massdns_output.txt domain_list.txt
