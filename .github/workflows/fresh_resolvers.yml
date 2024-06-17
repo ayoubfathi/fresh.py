@@ -33,10 +33,15 @@ jobs:
     - name: Install MassDNS
       run: |
         sudo apt-get update
-        sudo apt-get install -y massdns
+        git clone https://github.com/blechschmidt/massdns.git
+        cd massdns
+        make
+        sudo make install
 
     - name: Run fresh.py
-      run: python3 fresh.py -o resolvers.txt
+      run: |
+        cd /home/runner/work/
+        python3 fresh.py -o resolvers.txt
 
     - name: MassDNS resolvers
       run: massdns -r resolvers.txt -t A -o S -w massdns_output.txt domain_list.txt
