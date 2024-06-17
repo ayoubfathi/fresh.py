@@ -40,7 +40,6 @@ jobs:
 
     - name: Run fresh.py
       run: |
-        cd /home/runner/work/
         python3 fresh.py -o resolvers.txt
       working-directory: /home/runner/work/fresh.py/fresh.py
       continue-on-error: true
